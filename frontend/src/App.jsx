@@ -1,34 +1,25 @@
-import { useState, useEffect } from 'react';
-import axios from 'axios';
-import JobCard from './components/JobCard';
-import SearchBar from './components/SearchBar';
-import DemandChart from './components/DemandChart';
-import SkillGapForm from './components/SkillGapForm';
+import React from 'react';
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import Layout from './components/Layout';
+import DashboardPage from './pages/DashboardPage';
+import AnalyzerPage from './pages/AnalyzerPage';
+import JobsPage from './pages/JobsPage';
+import TrendsPage from './pages/TrendsPage';
 
 function App() {
-  const [jobs, setJobs] = useState([]);
-
-  const fetchJobs = (filters = {}) => {
-    axios.get('http://127.0.0.1:8000/api/jobs/', { params: filters })
-      .then(response => setJobs(response.data))
-      .catch(error => console.error('Error fetching jobs:', error));
-  };
-
-  useEffect(() => {
-    fetchJobs();
-  }, []);
-
   return (
-    <div style={{ maxWidth: '700px', margin: '0 auto', padding: '20px' }}>
-      <h1>Skill Gap Analyzer</h1>
-      <DemandChart />
-      <SkillGapForm />
-      <SearchBar onSearch={fetchJobs} />
-      <p>{jobs.length} job(s) found</p>
-      {jobs.map(job => (
-        <JobCard key={job.id} job={job} />
-      ))}
-    </div>
+    <BrowserRouter>
+      <Routes>
+        <Route path="/" element={<Layout />}>
+          <Route index element={<DashboardPage />} />
+          <Route path="analyzer" element={<AnalyzerPage />} />
+          <Route path="jobs" element={<JobsPage />} />
+          <Route path="trends" element={<TrendsPage />} />
+          {/* Fallback route */}
+          <Route path="*" element={<Navigate to="/" replace />} />
+        </Route>
+      </Routes>
+    </BrowserRouter>
   );
 }
 
